@@ -5,6 +5,7 @@ import os
 import pyautogui as pgui  #pythonからキーボードを操作
 
 ## Arduinoに信号を送信
+'''Arduino SDKは起動し，シリアルモニタは開かない'''
 import serial
 ser = serial.Serial()
 ser.baudrate = 115200
