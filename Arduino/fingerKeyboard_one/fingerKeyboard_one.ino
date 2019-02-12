@@ -16,6 +16,7 @@ int finger2 = 0;
 int up = 0;
 int down = 0;
 
+int flag_finger = 0;
 
 void setup() {
   Serial.begin(115200);
@@ -41,12 +42,12 @@ void loop() {
   Serial.println(up);
   Serial.print("down: ");
   Serial.println(down);
+  Serial.print("type: ");
 */
 
   // どの指か検知
-  if (finger2 < 25) {
+  if (finger2 < 25 || flag_finger == 2) {
 //    Serial.println("finger2");
-//    Serial.print("type: ");
     
     // 上or下にフリックを検知
     if (up < 25 && up > 5) {
@@ -78,6 +79,13 @@ void loop() {
      else {
       // せ
       Serial.println("6");
+    }
+
+    if (flag_finger != 0) {
+      flag_finger = 0;
+    }
+    else {
+      flag_finger = 2;
     }
 
   } else Serial.println("7");

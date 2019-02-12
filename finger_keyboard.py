@@ -22,12 +22,15 @@ sleep(2) # 開いてから信号を送信するまで2秒待つ必要がある
 ########################
 
 consonant = 0 # 子音
+count = 0
 consonant_words = ['', 'k', 's']
+
 
 print('start')
 while True:
     read = ser.readline()
     location = int(read.strip().decode('utf-8')) # stripで余分な文字列を排除
+    print(count, location)
     if consonant == 0:
         if location in np.arange(3,6): # 真ん中3つのボタンをタッチ
             consonant = location # 子音を決定
@@ -38,15 +41,25 @@ while True:
         pgui.press('kana') # Windowsでは2回必要
         if location == consonant - 1:
             pgui.typewrite(consonant_word+'i')
+            count = 0
+            consonant = 0
         elif location == 0:
             pgui.typewrite(consonant_word+'u')
+            count = 0
+            consonant = 0
         elif location == consonant + 1:
             pgui.typewrite(consonant_word+'e')
+            count = 0
+            consonant = 0
         elif location == 1:
             pgui.typewrite(consonant_word+'o')
-        elif location == consonant:
+            count = 0
+            consonant = 0
+        elif count == 10:
             pgui.typewrite(consonant_word+'a')
+            count = 0
+            consonant = 0
         sleep(0.1)
-        consonant = 0
+        count += 1
 
 ser.close()
