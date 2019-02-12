@@ -5,7 +5,7 @@ import os
 import pyautogui as pgui  #pythonからキーボードを操作
 
 ## Arduinoに信号を送信
-'''Arduino SDKは起動し，シリアルモニタは開かない'''
+'''Arduino SDKを起動し，シリアルモニタは開かない'''
 import serial
 ser = serial.Serial()
 ser.baudrate = 115200
@@ -22,13 +22,12 @@ sleep(2) # 開いてから信号を送信するまで2秒待つ必要がある
 ########################
 
 consonant = 0 # 子音
-count = 0
 consonant_words = ['', 'k', 's']
 
+print('start')
 while True:
     read = ser.readline()
     location = int(read.strip().decode('utf-8')) # stripで余分な文字列を排除
-    count += 1
     if consonant == 0:
         if location in np.arange(3,6): # 真ん中3つのボタンをタッチ
             consonant = location # 子音を決定
@@ -45,9 +44,8 @@ while True:
             pgui.typewrite(consonant_word+'e')
         elif location == 1:
             pgui.typewrite(consonant_word+'o')
-        elif count == 5:
+        elif location == consonant:
             pgui.typewrite(consonant_word+'a')
-            count = 0
         sleep(0.1)
         consonant = 0
 
