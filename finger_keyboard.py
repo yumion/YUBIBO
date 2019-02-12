@@ -21,7 +21,7 @@ sleep(2) # 開いてから信号を送信するまで2秒待つ必要がある
 # 何もなし:7
 ########################
 
-consonant = 0
+consonant = 0 # 子音
 count = 0
 consonant_words = ['', 'k', 's']
 
@@ -30,8 +30,8 @@ while True:
     location = int(read.strip().decode('utf-8')) # stripで余分な文字列を排除
     count += 1
     if consonant == 0:
-        if location in np.arange(3,6):
-            consonant = location
+        if location in np.arange(3,6): # 真ん中3つのボタンをタッチ
+            consonant = location # 子音を決定
             consonant_word = consonant_words[consonant-3]
 
     else:
