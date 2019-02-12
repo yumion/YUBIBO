@@ -2,11 +2,11 @@
 int thumbPin = 4;
 // touch sensor
 int upPin = T4; //13pin
-int downPin = T5; //12pin
+int downPin = T6; //14pin
 int finger2Pin = T3; //15pin
-//int finger3Pin = T4;
-//int finger4Pin = T5;
-//int finger5Pin = T6;
+//int finger3Pin = T4; // 13pin
+//int finger4Pin = T5; // 12pin
+//int finger5Pin = T6; // 14pin
 
 int thumb = 0;
 int finger2 = 0;
@@ -23,7 +23,7 @@ void setup() {
 }
  
 void loop() {
-  delay(1000);
+  delay(500);
   // 上下
   up = touchRead(upPin);
   down = touchRead(downPin);
@@ -34,25 +34,32 @@ void loop() {
 //  finger5 = touchRead(finger5Pin);
   thumb = analogRead(thumbPin);
 
-//  Serial.print("thumb: ");
-//  Serial.println(thumb);
+/*
+  Serial.print("thumb: ");
+  Serial.println(thumb);
+  Serial.print("up: ");
+  Serial.println(up);
+  Serial.print("down: ");
+  Serial.println(down);
+*/
 
-  //どの指か検知
+  // どの指か検知
   if (finger2 < 25) {
 //    Serial.println("finger2");
-  
+//    Serial.print("type: ");
+    
     // 上or下にフリックを検知
-    if (up < 25) {
+    if (up < 25 && up > 5) {
       // う
       Serial.println("0");
     }
-    else if (down < 25) {
+    else if (down < 25 && down > 5) {
       // お
       Serial.println("1");
     }
   
     // 指のどの関節にいるか検知
-    if (thumb < 500) {
+    else if (thumb < 500) {
       // い
       Serial.println("2");
     }
