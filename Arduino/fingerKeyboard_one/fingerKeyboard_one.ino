@@ -35,7 +35,6 @@ void loop() {
 //  finger5 = touchRead(finger5Pin);
   thumb = analogRead(thumbPin);
 
-/*
   Serial.print("thumb: ");
   Serial.println(thumb);
   Serial.print("up: ");
@@ -43,7 +42,7 @@ void loop() {
   Serial.print("down: ");
   Serial.println(down);
   Serial.print("type: ");
-*/
+
 
   // どの指か検知
   if (finger2 < 25 || flag_finger == 2) {
@@ -92,4 +91,3 @@ void loop() {
 
 
 }
-
