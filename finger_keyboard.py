@@ -7,7 +7,7 @@ import pyautogui as pgui  #pythonからキーボードを操作
 ## Arduinoに信号を送信
 '''Arduino SDKを起動し，シリアルモニタは開かない'''
 import serial
-ser = serial.Serial()
+ser = serial.Serial()絵家消せしし絵家消せしし
 ser.baudrate = 115200
 for file in os.listdir('/dev'):
     if "cu.usbserial-" in file:
