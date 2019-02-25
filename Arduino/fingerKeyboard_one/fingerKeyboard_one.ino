@@ -22,7 +22,7 @@ void setup() {
   Serial.begin(115200);
   pinMode(thumbPin, OUTPUT);
 }
- 
+
 void loop() {
   delay(500);
   // 上下
@@ -47,7 +47,7 @@ void loop() {
   // どの指か検知
   if (finger2 < 25 || flag_finger == 2) {
 //    Serial.println("finger2");
-    
+
     // 上or下にフリックを検知
     if (up < 25 && up > 5) {
       // う
@@ -57,7 +57,7 @@ void loop() {
       // お
       Serial.println("1");
     }
-  
+
     // 指のどの関節にいるか検知
     else if (thumb < 500) {
       // い
