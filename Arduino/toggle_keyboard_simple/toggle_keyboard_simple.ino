@@ -18,7 +18,7 @@ void loop() {
 
 void type_key() {
   thumb = analogRead(thumbPin);
-   
+//  Serial.println(thumb); 
     // 指のどの関節にいるか検知
     if (thumb > 4000) {
       // 接触なし
