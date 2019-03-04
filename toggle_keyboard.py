@@ -3,7 +3,7 @@ import numpy as np
 from time import sleep
 import os
 import pyautogui as pgui  #pythonからキーボードを操作
-pgui.KEYBOARD_KEYS
+# pgui.KEYBOARD_KEYS
 
 
 # Arduinoに信号を送信
