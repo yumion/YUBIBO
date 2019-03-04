@@ -11,11 +11,13 @@ import pyautogui as pgui  #pythonからキーボードを操作
 import serial
 ser = serial.Serial()
 ser.baudrate = 115200
-
-## MACを使う場合
-# for file in os.listdir('/dev'):
-#     if "cu.usbserial-" in file:
-
+'''
+## Macを使う場合
+for file in os.listdir(‘/dev’):
+   if “cu.usbserial-” in file:
+       ser.port = ‘/dev/’+file
+       ser.open() # シリアルモニタを開く
+'''
 # winを使う場合
 ser.port = 'COM3'
 ser.open() # シリアルモニタを開く
