@@ -57,7 +57,7 @@ while True:
             # print(consonant_words[location]+vowel_words[count])
         count += 1
 
-    elif location == 10:
+    elif location == 9:
         pgui.press('space')
         # print('space')
     elif location ==11:
