@@ -58,7 +58,7 @@ while True:
             pre_location = location
         else:
             pgui.press('backspace')
-            pgui.typewrite(yayuyo_words[count*2-1])
+            pgui.typewrite(yayuyo_words[count])
 
         count += 1
         if count==3:
@@ -72,7 +72,7 @@ while True:
             pre_location = location
         else:
             pgui.press('backspace')
-            pgui.typewrite(waon_words[count*2-1])
+            pgui.typewrite(waon_words[count])
         count += 1
         if count==3:
             count=0

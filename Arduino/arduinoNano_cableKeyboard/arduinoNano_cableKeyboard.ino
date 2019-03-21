@@ -39,7 +39,7 @@ int convert_to_region(int thumb)
 {
   int num = 0;
   // 指のどの関節にいるか検知
-  if (thumb > 690)
+  if (thumb > 500)
   {
     // 接触なし
     num = 15;
@@ -59,7 +59,7 @@ int convert_to_region(int thumb)
     // Enter
     num = 14;
   }
-  else if (thumb > 400)
+  else if (thumb > 390)
   {
     // あ
     num = 0;
