@@ -123,7 +123,7 @@ while True:
             # print('x'+consonant_words[pre_location]+vowel_words[count-1])
 
     # 変換(space)
-    elif location ==12:
+    elif location ==14:
         pgui.press('space')
         # print('space')
     # delete
@@ -131,6 +131,6 @@ while True:
         pgui.press('backspace')
         # print('backspace')
     # enter
-    elif location ==14:
+    elif location ==12:
         pgui.press('enter')
         # print('enter')
