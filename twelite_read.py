@@ -7,9 +7,9 @@ import sys
 from analog_to_num import convert_to_region
 
 # MACを使う場合
-# s = serial.Serial('/dev/cu.usbserial-MW2UQ1WS', 115200)
+s = serial.Serial('/dev/cu.usbserial-MW2UQ1WS', 115200)
 # Winを使う場合
-s = serial.Serial('COM4', 115200)
+# s = serial.Serial('COM4', 115200)
 
 
 def parseTWELite(data):

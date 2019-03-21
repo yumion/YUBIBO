@@ -3,8 +3,24 @@ import numpy as np
 from time import sleep
 import os
 import pyautogui as pgui  # pythonからキーボードを操作
-from twelite_read import get_num
-from twelite_read import parseTWELite
+
+# Arduinoに信号を送信
+# Arduino SDKを起動し，シリアルモニタは開かない
+import serial
+ser = serial.Serial()
+ser.baudrate = 9600 # ArduinoNanoの場合
+
+## Macを使う場合
+for file in os.listdir('/dev'):
+    if "cu.usbserial-" in file:
+        ser.port = '/dev/'+file
+        ser.open() # シリアルモニタを開く
+'''
+# Windowsを使う場合
+ser.port = 'COM3'
+ser.open() # シリアルモニタを開く
+'''
+sleep(2)
 
 ######### 入力 #########
 # あ:0　か:1　さ:2
@@ -14,27 +30,26 @@ from twelite_read import parseTWELite
 # space:12 backspace:13 enter:14
 # 何もなし:15
 ########################
+
 count = 0
 op_count = 0
 pre_location = None
-consonant_words = ['', 'k', 's', 't', 'n', 'h', 'm', 'y','r','','w','']
-voiced_consonant_words = ['', 'g', 'z', 'd', '', 'b']
-vowel_words = ['a','i','u','e','o']
-yayuyo_words = ['ya','yu','yo']
-waon_words = ['wa','wo','nn']
-pre_num = 15
+consonant_words = ['', 'k', 's', 't', 'n', 'h', 'm', 'y','r','','w',''] # 子音
+voiced_consonant_words = ['', 'g', 'z', 'd', '', 'b'] # 濁点
+vowel_words = ['a','i','u','e','o'] # 母音
+yayuyo_words = ['ya','yu','yo'] # や行
+waon_words = ['wa','wo','nn'] # わ行
+pre_num = 15 # 接触なし
 
 print('start')
-
 pgui.press('kana')
 # pgui.press('kana') # Windowsでは2回必要
 while True:
-    # location = int(input())
-    location = get_num(pre_num)
+    read = ser.readline()
+    location = int(read.strip().decode('utf-8')) # stripで余分な文字列を排除
     if location == None:
         location = 15
-    # read = ser.readline()
-    # location = int(read.strip().decode('utf-8')) # stripで余分な文字列を排除
+
     count = count % 5
     print(count, op_count, location)
 
