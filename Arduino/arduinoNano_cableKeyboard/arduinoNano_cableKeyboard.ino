@@ -1,5 +1,4 @@
 int thumbPin = 2;   // analogPin
-int split_num = 13; // 分割数
 int pre_num = 0;    // 1つ前のキーを覚えておく（グローバル変数）
 
 void setup()
@@ -10,28 +9,20 @@ void setup()
 
 void loop()
 {
-  int region = 0;
+  int region = 15;
   region = read_key(); // 親指の位置
   type_key(region);
+  delay(100);
 }
 
 int read_key()
 // どの位置を触れたか検出
 {
   int thumb, region;
-  int count[split_num] = {};
-  // 10点サンプリング
-  for (int i = 0; i < 10; i++)
-  {
-    thumb = analogRead(thumbPin);
-    Serial.println(thumb);
-    region = convert_to_region(thumb); // 0-4095を離散値へ変換
-    // Serial.println(region);
-    count[region] += 1;
-    delay(1000);
-  }
-  return argmax(count, split_num);
-//  return region;
+  thumb = analogRead(thumbPin);
+//  Serial.println(thumb);
+  region = convert_to_region(thumb); // 0-1023を離散値へ変換
+  return region;
 }
 
 void type_key(int num)
@@ -48,62 +39,77 @@ int convert_to_region(int thumb)
 {
   int num = 0;
   // 指のどの関節にいるか検知
-  if (thumb > 4000)
+  if (thumb > 500)
   {
     // 接触なし
+    num = 15;
+  }
+  else if (thumb > 460)
+  {
+    // Space
     num = 12;
   }
-  else if (thumb > 3700)
+  else if (thumb > 440)
+  {
+    // Delete
+    num = 13;
+  }
+  else if (thumb > 420)
+  {
+    // Enter
+    num = 14;
+  }
+  else if (thumb > 390)
   {
     // あ
     num = 0;
   }
-  else if (thumb > 3400)
+  else if (thumb > 370)
   {
     // か
     num = 1;
   }
-  else if (thumb > 3200)
+  else if (thumb > 340)
   {
     // さ
     num = 2;
   }
-  else if (thumb > 3000)
+  else if (thumb > 320)
   {
     // た
     num = 3;
   }
-  else if (thumb > 2900)
+  else if (thumb > 290)
   {
     // な
     num = 4;
   }
-  else if (thumb > 2700)
+  else if (thumb > 260)
   {
     // は
     num = 5;
   }
-  else if (thumb > 2500)
+  else if (thumb > 220)
   {
     // ま
     num = 6;
   }
-  else if (thumb > 2200)
+  else if (thumb > 180)
   {
     // や
     num = 7;
   }
-  else if (thumb > 1800)
+  else if (thumb > 140)
   {
     // ら
     num = 8;
   }
-  else if (thumb > 1200)
+  else if (thumb > 80)
   {
-    // Space
+    // 濁点、半濁点、小文字
     num = 9;
   }
-  else if (thumb > 500)
+  else if (thumb > 40)
   {
     // わ
     num = 10;
@@ -116,15 +122,3 @@ int convert_to_region(int thumb)
   return num;
 }
 
-int argmax(int array[], int n)
-// 要素が最大となる引数を求める
-{
-  int i, max_idx;
-  max_idx = 0;
-  for (i = 1; i < n; i++)
-  {
-    if (array[max_idx] < array[i])
-      max_idx = i;
-  }
-  return max_idx;
-}

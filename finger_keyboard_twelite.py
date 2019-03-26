@@ -23,21 +23,19 @@ vowel_words = ['a','i','u','e','o']
 yayuyo_words = ['ya','yu','yo']
 waon_words = ['wa','wo','nn']
 pre_num = 15
+
 print('start')
 
 pgui.press('kana')
-pgui.press('kana') # Windowsでは2回必要
+# pgui.press('kana') # Windowsでは2回必要
 while True:
     # location = int(input())
     location = get_num(pre_num)
     if location == None:
         location = 15
-
     # read = ser.readline()
     # location = int(read.strip().decode('utf-8')) # stripで余分な文字列を排除
-
     count = count % 5
-
     print(count, op_count, location)
 
     if location != 15 and location != 9 and location != 7 and location != 10 and location < 11: #入力なし、濁点、11,以外入力された場合
@@ -46,12 +44,10 @@ while True:
             pgui.typewrite(consonant_words[location]+vowel_words[count])
             # print(consonant_words[location]+vowel_words[count])
             pre_location = location
-
         else:
             pgui.press('backspace')
             pgui.typewrite(consonant_words[location]+vowel_words[count])
             # print(consonant_words[location]+vowel_words[count])
-
         count += 1
 
     elif location == 7:
@@ -62,7 +58,7 @@ while True:
             pre_location = location
         else:
             pgui.press('backspace')
-            pgui.typewrite(yayuyo_words[count*2-1])
+            pgui.typewrite(yayuyo_words[count])
 
         count += 1
         if count==3:
@@ -76,7 +72,7 @@ while True:
             pre_location = location
         else:
             pgui.press('backspace')
-            pgui.typewrite(waon_words[count*2-1])
+            pgui.typewrite(waon_words[count])
         count += 1
         if count==3:
             count=0
