@@ -20,7 +20,7 @@ int read_key()
 {
   int thumb, region;
   thumb = analogRead(thumbPin);
-//  Serial.println(thumb);
+  // Serial.println(thumb);
   region = convert_to_region(thumb); // 0-1023を離散値へ変換
   return region;
 }
@@ -121,4 +121,3 @@ int convert_to_region(int thumb)
   }
   return num;
 }
-
