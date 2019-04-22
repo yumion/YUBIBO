@@ -101,12 +101,12 @@ while True:
             # print('小文字')
             # print('x'+consonant_words[pre_location]+vowel_words[count-1])
 
-    elif location ==12:
+    elif location ==14:
         pgui.press('space')
         # print('space')
     elif location ==13:
         pgui.press('backspace')
         # print('backspace')
-    elif location ==14:
+    elif location ==12:
         pgui.press('enter')
         # print('enter')
