@@ -1,4 +1,4 @@
-int thumbPin = 2;   // analogPin
+int thumbPin = 3;   // analogPin
 int pre_num = 0;    // 1つ前のキーを覚えておく（グローバル変数）
 
 void setup()
