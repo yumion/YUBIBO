@@ -11,15 +11,15 @@ ser = serial.Serial()
 ser.baudrate = 9600 # ArduinoNanoの場合
 
 ## Macを使う場合
-for file in os.listdir('/dev'):
-    if "cu.usbserial-" in file:
-        ser.port = '/dev/'+file
-        ser.open() # シリアルモニタを開く
-'''
-# Windowsを使う場合
-ser.port = 'COM3'
+# for file in os.listdir('/dev'):
+#     if "cu.usbserial-" in file:
+#         ser.port = '/dev/'+file
+#         ser.open() # シリアルモニタを開く
+
+# winを使う場合
+ser.port = 'COM5'
 ser.open() # シリアルモニタを開く
-'''
+
 sleep(2)
 
 ######### 入力 #########
@@ -43,8 +43,9 @@ pre_num = 15 # 接触なし
 
 print('start')
 pgui.press('kana')
-# pgui.press('kana') # Windowsでは2回必要
+pgui.press('kana') # Windowsでは2回必要
 while True:
+    # location = int(input())
     read = ser.readline()
     location = int(read.strip().decode('utf-8')) # stripで余分な文字列を排除
     if location == None:
@@ -133,4 +134,5 @@ while True:
     # enter
     elif location ==12:
         pgui.press('enter')
+        count=0
         # print('enter')
