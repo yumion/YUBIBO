@@ -1,26 +1,24 @@
 # coding: UTF-8
+import argparse
 import numpy as np
 from time import sleep
 import os
 import pyautogui as pgui  # pythonからキーボードを操作
 
+# 起動時の引数
+parser = argparse.ArgumentParser()
+parser.add_argument('--baudrate', type=int, default=9600, help='Baudrate.')
+parser.add_argument('--port', type=str, default='COM4', help='Number of port.')
+args = parser.parse_args()
+
 # Arduinoに信号を送信
 # Arduino SDKを起動し，シリアルモニタは開かない
 import serial
 ser = serial.Serial()
-ser.baudrate = 9600 # ArduinoNanoの場合
-
-## Macを使う場合
-# for file in os.listdir('/dev'):
-#     if "cu.usbserial-" in file:
-#         ser.port = '/dev/'+file
-#         ser.open() # シリアルモニタを開く
-
-# winを使う場合
-ser.port = 'COM5'
+ser.baudrate = args.baudrate # データ転送レート
+ser.port = args.port # ポート番号
 ser.open() # シリアルモニタを開く
-
-sleep(2)
+sleep(2) # シリアルモニタを開いてから2秒待ってから通信する必要あり
 
 ######### 入力 #########
 # あ:0　か:1　さ:2
@@ -45,26 +43,21 @@ print('start')
 pgui.press('kana')
 pgui.press('kana') # Windowsでは2回必要
 while True:
-    # location = int(input())
     read = ser.readline()
     location = int(read.strip().decode('utf-8')) # stripで余分な文字列を排除
     if location == None:
         location = 15
-
     count = count % 5
-    print(count, op_count, location)
 
     '''入力なし、濁点、11,以外入力された場合'''
     if location != 15 and location != 9 and location != 7 and location != 10 and location < 11:
         if pre_location != location:
             count = 0
             pgui.typewrite(consonant_words[location]+vowel_words[count])
-            # print(consonant_words[location]+vowel_words[count])
             pre_location = location
         else:
             pgui.press('backspace')
             pgui.typewrite(consonant_words[location]+vowel_words[count])
-            # print(consonant_words[location]+vowel_words[count])
         count += 1
 
     # や行
@@ -72,7 +65,6 @@ while True:
         if pre_location != location:
             count = 0
             pgui.typewrite(consonant_words[location]+vowel_words[count])
-            # print(consonant_words[location]+vowel_words[count])
             pre_location = location
         else:
             pgui.press('backspace')
@@ -87,7 +79,6 @@ while True:
         if pre_location != location:
             count = 0
             pgui.typewrite(consonant_words[location]+vowel_words[count])
-            # print(consonant_words[location]+vowel_words[count])
             pre_location = location
         else:
             pgui.press('backspace')
@@ -102,8 +93,6 @@ while True:
         if op_count == 0 and pre_location in [1,2,3,5]:
             pgui.press('backspace')
             pgui.typewrite(voiced_consonant_words[pre_location]+vowel_words[count-1])
-            # print('濁点')
-            # print(voiced_consonant_words[pre_location]+vowel_words[count-1])
             if pre_location == 5 or (pre_location==3 and count==3): #
                 op_count+=1
 
@@ -111,8 +100,6 @@ while True:
         elif op_count == 1 and pre_location == 5:
             pgui.press('backspace')
             pgui.typewrite('p'+vowel_words[count-1])
-            # print('半濁点')
-            # print('p'+vowel_words[count-1])
             op_count=0
 
         # 小文字
@@ -120,19 +107,14 @@ while True:
             pgui.press('backspace')
             pgui.typewrite('x'+consonant_words[pre_location]+vowel_words[count-1])
             op_count=0
-            # print('小文字')
-            # print('x'+consonant_words[pre_location]+vowel_words[count-1])
 
     # 変換(space)
     elif location ==14:
         pgui.press('space')
-        # print('space')
     # delete
     elif location ==13:
         pgui.press('backspace')
-        # print('backspace')
     # enter
     elif location ==12:
         pgui.press('enter')
         count=0
-        # print('enter')
