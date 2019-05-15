@@ -24,7 +24,7 @@ sleep(2) # シリアルモニタを開いてから2秒待ってから通信す�
 # あ:0　か:1　さ:2
 # た:3　な:4　は:5
 # ま:6　や:7　ら:8
-# 濁点、半濁点、小文字:9　わ:10　:11
+# 濁点、半濁点、小文字:11　わ:10　何もなし:9
 # space:12 backspace:13 enter:14
 # 何もなし:15
 ########################
@@ -45,6 +45,7 @@ pgui.press('kana') # Windowsでは2回必要
 while True:
     read = ser.readline()
     location = int(read.strip().decode('utf-8')) # stripで余分な文字列を排除
+    print('num: ', location)
     if location == None:
         location = 15
     count = count % 5
@@ -88,8 +89,7 @@ while True:
             count=0
 
     # 濁点
-    elif location == 9:
-        # print('option')
+    elif location == 11:
         if op_count == 0 and pre_location in [1,2,3,5]:
             pgui.press('backspace')
             pgui.typewrite(voiced_consonant_words[pre_location]+vowel_words[count-1])
@@ -109,12 +109,12 @@ while True:
             op_count=0
 
     # 変換(space)
-    elif location ==14:
+    elif location == 12:
         pgui.press('space')
     # delete
-    elif location ==13:
+    elif location == 13:
         pgui.press('backspace')
     # enter
-    elif location ==12:
+    elif location == 14:
         pgui.press('enter')
-        count=0
+        count=0 # Enterすると文字確定するのでリセット
