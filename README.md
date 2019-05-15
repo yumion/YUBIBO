@@ -10,7 +10,7 @@
 
 ## 実行方法
 1. PCとArduinoをUSBで接続する．
-2. Arduino SDKを起動(ただし，シリアルモニタは開かない)
+2. Arduino SDKを起動(ただし，シリアルモニタは開かない)．Arduinoのポート番号を記録しておく．
 3. ターミナル(コマンドプロンプト等Pythonが実行できる端末)を起動し ```finger_keyboard_arduino.py``` を実行する．optionでportを指定．
 ```
 $ python finger_keyboard_arduino.py --port COM4
