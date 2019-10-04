@@ -15,7 +15,7 @@ SoftwareSerial btSerial(BT_RX, BT_TX); // Bluetoothとやりとりするため�
  *  1:あ 2:か 3:さ
  *  4:た 5:な 6:は
  *  7:ま 8:や 9:ら
- *  21:濁点/半濁点/小文字 10:わ 20:未割り当て
+ *  21:濁点/半濁点/小文字 10:わ 20:記号
  *  0:接触なし
  */
 
@@ -24,6 +24,7 @@ char voiced_consonant_words[6] = {'g', 'z', 'd', '\0', 'b', '\0'};  // 濁点
 char vowel_words[6] = "aiueo";  // 母音
 char yayuyo_words[7] = "yayuyo";  // や行
 char wawonn_words[7] = "wawonn";  // わ行
+char token_words[6] = {'-', ',', '.', '!', '?', '\0'};  // 記号
 char output_words[3] = {};  // 文字結合して出力する用
 
 int location = 0;
@@ -69,6 +70,7 @@ void loop() {
             backspaceKey();
         }
         output_words[0] = vowel_words[count];
+        output_words[1] = '\0';
         btSerial.print(output_words);
         count += 1;
     }
@@ -80,11 +82,11 @@ void loop() {
         } else {
             backspaceKey();
         }
-        output_words[0] = yayuyo_words[count];
-        output_words[1] = yayuyo_words[count + 1];
+        output_words[0] = yayuyo_words[2 * count];
+        output_words[1] = yayuyo_words[2 * count + 1];
         btSerial.print(output_words);
-        count += 2;
-        if (count >= 5) {
+        count += 1;
+        if (count == 3) {
             count = 0;
         }
     }
@@ -96,11 +98,11 @@ void loop() {
         } else {
             backspaceKey();
         }
-        output_words[0] = wawonn_words[count];
-        output_words[1] = wawonn_words[count + 1];
+        output_words[0] = wawonn_words[2 * count];
+        output_words[1] = wawonn_words[2 * count + 1];
         btSerial.print(output_words);
-        count += 2;
-        if (count >= 5) {
+        count += 1;
+        if (count == 3) {
             count = 0;
         }
     }
@@ -132,6 +134,23 @@ void loop() {
         }
         btSerial.print(output_words);
     }
+    /*  */
+    else if (location == 20) {
+        if (pre_location != location) {
+            count = 0;
+            pre_location = location;
+        } else {
+            backspaceKey();
+        }
+        output_words[0] = token_words[count];
+        output_words[1] = '\0';
+        btSerial.print(output_words);
+        count += 1;
+        if (count == strlen(token_words)) {
+            count = 0;
+        }
+    }
+    
     /* 変換(Space) */
     else if (location == 22) {
         spaceKey();
@@ -188,6 +207,10 @@ void spaceKey() {
 
 void shiftKey() {
   sendKey((byte)0xE1);
+}
+
+void deleteKey() {
+  sendKey((byte)0x4C);
 }
 
 int readLocation() {
