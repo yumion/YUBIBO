@@ -30,7 +30,7 @@ char output_words[3] = {};  // 文字結合して出力する用
 int location = 0;
 int pre_location = 0;
 int count = 0; 
-int op_count = 0; //濁点,半濁点,小文字カウント
+int p_flag = 0; // ぱ行撥音フラグ
 
 
 void setup() {
@@ -106,35 +106,51 @@ void loop() {
             count = 0;
         }
     }
-    /* 濁点,半濁音,小文字 */
+    /* 濁点/半濁音/小文字 */
     else if (location == 21) {
         /* 濁音(か行/さ行/た行/は行) */
-        if (op_count == 0 && (pre_location == 2 || pre_location == 3 || pre_location == 4 || pre_location == 6) ) {
+        if (p_flag == 0 && (pre_location == 2 || pre_location == 3 || pre_location == 4 || pre_location == 6) ) {
             backspaceKey();
             output_words[0] = voiced_consonant_words[pre_location - 2];
             output_words[1] = vowel_words[count - 1];  // か->がでcount+1される
             if (pre_location == 6 || (pre_location == 4 && count == 3)) {
               // は行/つ
-                op_count += 1;
+                p_flag = 1;
             }
         }
         /* 半濁音(ぱ行) */
-        else if (op_count == 1 && pre_location == 6) {
+        else if (p_flag == 1 && pre_location == 6) {
             backspaceKey();
             output_words[0] = 'p';
             output_words[1] = vowel_words[count - 1];
-            op_count = 0;
+            p_flag = 0;
         }
-        /* 小文字(あ行/や行/っ) */
-        else if ( pre_location == 1 || pre_location == 8 || (pre_location == 4 && count == 3) ) {
+        /* 撥音(っ) */
+        else if (p_flag == 1 && (pre_location == 4 && count == 3)) {
+            backspaceKey();
+            btSerial.print('x');
+            output_words[0] = 't';
+            output_words[1] = 'u';
+            p_flag = 0;
+        }
+        /* 小文字(あ行) */
+        else if (pre_location == 1) {
             backspaceKey();
             output_words[0] = 'x';
             output_words[1] = vowel_words[count - 1];
-            op_count = 0;
+            p_flag = 0;
+        }
+        /* 小文字(や行) */
+        else if (pre_location == 8) {
+            backspaceKey();
+            btSerial.print('x');
+            output_words[0] = yayuyo_words[2 * (count - 1)];
+            output_words[1] = yayuyo_words[2 * (count - 1) + 1];
+            p_flag = 0;
         }
         btSerial.print(output_words);
     }
-    /*  */
+    /* 記号 */
     else if (location == 20) {
         if (pre_location != location) {
             count = 0;
@@ -150,7 +166,6 @@ void loop() {
             count = 0;
         }
     }
-    
     /* 変換(Space) */
     else if (location == 22) {
         spaceKey();
@@ -164,7 +179,7 @@ void loop() {
         enterKey();
         count = 0;  // Enterすると文字確定するのでリセット  
     }
-    
+
     delay(200);
 }
 
