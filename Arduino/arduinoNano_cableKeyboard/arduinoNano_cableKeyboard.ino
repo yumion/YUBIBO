@@ -12,7 +12,7 @@ void loop()
   int region = 15;
   region = read_key(); // 親指の位置
   type_key(region);
-  delay(100);
+  delay(200);
 }
 
 int read_key()
@@ -20,7 +20,8 @@ int read_key()
 {
   int thumb, region;
   thumb = analogRead(thumbPin);
-  // Serial.println(thumb);
+//  Serial.print("vol: ");
+//   Serial.println(thumb);
   region = convert_to_region(thumb); // 0-1023を離散値へ変換
   return region;
 }
@@ -30,6 +31,7 @@ void type_key(int num)
 {
   if (pre_num != num) // 同じキーが押されなかったら
   {
+//    Serial.print("num: ");
     Serial.println(num); // pythonへ送信
     pre_num = num;       // 1つ前の入力を記憶
   }
@@ -39,67 +41,67 @@ int convert_to_region(int thumb)
 {
   int num = 0;
   // 指のどの関節にいるか検知
-  if (thumb > 500)
+  if (thumb > 600)
   {
     // 接触なし
     num = 15;
   }
-  else if (thumb > 460)
-  {
-    // Space
-    num = 12;
-  }
-  else if (thumb > 440)
-  {
-    // Delete
-    num = 13;
-  }
-  else if (thumb > 420)
+  else if (thumb > 399)
   {
     // Enter
     num = 14;
   }
-  else if (thumb > 390)
+  else if (thumb > 380)
+  {
+    // Delete
+    num = 13;
+  }
+  else if (thumb > 360)
+  {
+    // Space
+    num = 12;
+  }
+  else if (thumb > 340)
   {
     // あ
     num = 0;
   }
-  else if (thumb > 370)
+  else if (thumb > 320)
   {
     // か
     num = 1;
   }
-  else if (thumb > 340)
+  else if (thumb > 300)
   {
     // さ
     num = 2;
   }
-  else if (thumb > 320)
+  else if (thumb > 275)
   {
     // た
     num = 3;
   }
-  else if (thumb > 290)
+  else if (thumb > 250)
   {
     // な
     num = 4;
   }
-  else if (thumb > 260)
+  else if (thumb > 230)
   {
     // は
     num = 5;
   }
-  else if (thumb > 220)
+  else if (thumb > 180)
   {
     // ま
     num = 6;
   }
-  else if (thumb > 180)
+  else if (thumb > 160)
   {
     // や
     num = 7;
   }
-  else if (thumb > 140)
+  else if (thumb > 120)
   {
     // ら
     num = 8;
@@ -109,14 +111,14 @@ int convert_to_region(int thumb)
     // 濁点、半濁点、小文字
     num = 9;
   }
-  else if (thumb > 40)
+  else if (thumb > 10)
   {
     // わ
     num = 10;
   }
   else
   {
-    // Enter
+    // 
     num = 11;
   }
   return num;
