@@ -1,13 +1,13 @@
 #include <SoftwareSerial.h>
 
-#define BT_RX 6
-#define BT_TX 5
+#define BT_RX 8
+#define BT_TX 7
 SoftwareSerial btSerial(BT_RX, BT_TX); // Bluetoothとやりとりするためのシリアル設定
 
 #define PWM_WIDTH 500
 #define PORATE 115200
 
-#define THUMBPIN 3   // analogPin(親指read用)
+#define THUMBPIN 2   // analogPin(親指read用)
 
 
  /* --- 入力 --- 
@@ -43,8 +43,8 @@ void setup() {
 
 void loop() {
     /* Read */
-    location = serialMonitorTest();  // シリアルモニタ用
-//    location = readLocation();  // デバイス用
+//    location = serialMonitorTest();  // シリアルモニタ用
+    location = readLocation();  // デバイス用
     if (location != 0) {Serial.print("location: "); Serial.println(location);}
     count = count % 5;
 
@@ -232,8 +232,8 @@ int readLocation() {
   // どの位置を触れたか検出
   int thumb, location;
   thumb = analogRead(THUMBPIN);
-//  Serial.print("vol: ");
-//  Serial.println(thumb);
+  Serial.print("vol: ");
+  Serial.println(thumb);
   location = divideRegion(thumb);  // 0-1023を離散値へ変換
   return location;
 }
@@ -290,6 +290,31 @@ int divideRegion(int thumb) {
   {
     // わ
     num = 10;
+  }
+    else if (thumb > 5)
+  {
+    // 記号
+    num = 20;
+  }
+    else if (thumb > 5)
+  {
+    // 濁点
+    num = 21;
+  }
+    else if (thumb > 5)
+  {
+    // space
+    num = 22;
+  }
+    else if (thumb > 5)
+  {
+    // backspace
+    num = 23;
+  }
+    else if (thumb > 5)
+  {
+    // enter
+    num = 24;
   }
   else
   {
