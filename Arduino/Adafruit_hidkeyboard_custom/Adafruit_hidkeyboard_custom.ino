@@ -1,14 +1,28 @@
-#include <SoftwareSerial.h>
+#include <Arduino.h>
+#include <SPI.h>
+#include "Adafruit_BLE.h"
+#include "Adafruit_BluefruitLE_SPI.h"
+#include "Adafruit_BluefruitLE_UART.h"
 
-#define BT_RX 7
-#define BT_TX 8
-SoftwareSerial btSerial(BT_RX, BT_TX); // Bluetoothとやりとりするためのシリアル設定
+#include "BluefruitConfig.h"
 
-#define PWM_WIDTH 500
-#define PORATE 115200
+#if SOFTWARE_SERIAL_AVAILABLE
+  #include <SoftwareSerial.h>
+#endif
+
+#define FACTORYRESET_ENABLE         0
+#define MINIMUM_FIRMWARE_VERSION    "0.6.6"
+/* ...hardware SPI, using SCK/MOSI/MISO hardware SPI pins and then user selected CS/IRQ/RST */
+Adafruit_BluefruitLE_SPI ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_RST);
+
+// A small helper
+void error(const __FlashStringHelper*err) {
+  Serial.println(err);
+  while (1);
+}
+
 
 #define THUMBPIN 2   // analogPin(親指read用)
-
 
  /* --- 入力 --- 
  *  22:Space 23:Backspace 24:Enter
@@ -33,21 +47,94 @@ int count = 0;
 int p_flag = 0; // ぱ行撥音フラグ
 
 
-void setup() {
-  // Mac側のシリアルポートの初期化
-  Serial.begin(PORATE);
-  // Bluetooth側のシリアルポートの初期化
-  btSerial.begin(PORATE);
-  Serial.println("start");
+void setup(void)
+{
+  while (!Serial);  // required for Flora & Micro
+  delay(500);
+
+  Serial.begin(115200);
+  Serial.println(F("Adafruit Bluefruit HID Keyboard Example"));
+  Serial.println(F("---------------------------------------"));
+
+  /* Initialise the module */
+  Serial.print(F("Initialising the Bluefruit LE module: "));
+
+  if ( !ble.begin(VERBOSE_MODE) )
+  {
+    error(F("Couldn't find Bluefruit, make sure it's in CoMmanD mode & check wiring?"));
+  }
+  Serial.println( F("OK!") );
+
+  if ( FACTORYRESET_ENABLE )
+  {
+    /* Perform a factory reset to make sure everything is in a known state */
+    Serial.println(F("Performing a factory reset: "));
+    if ( ! ble.factoryReset() ){
+      error(F("Couldn't factory reset"));
+    }
+  }
+
+  /* Disable command echo from Bluefruit */
+  ble.echo(false);
+
+  Serial.println("Requesting Bluefruit info:");
+  /* Print Bluefruit information */
+  ble.info();
+
+  /* Change the device name to make it easier to find */
+  Serial.println(F("Setting device name to 'Bluefruit Keyboard': "));
+  if (! ble.sendCommandCheckOK(F( "AT+GAPDEVNAME=Bluefruit Keyboard" )) ) {
+    error(F("Could not set device name?"));
+  }
+
+  /* Enable HID Service */
+  Serial.println(F("Enable HID Service (including Keyboard): "));
+  if ( ble.isVersionAtLeast(MINIMUM_FIRMWARE_VERSION) )
+  {
+    if ( !ble.sendCommandCheckOK(F( "AT+BleHIDEn=On" ))) {
+      error(F("Could not enable Keyboard"));
+    }
+  }else
+  {
+    if (! ble.sendCommandCheckOK(F( "AT+BleKeyboardEn=On"  ))) {
+      error(F("Could not enable Keyboard"));
+    }
+  }
+
+  /* Add or remove service requires a reset */
+  Serial.println(F("Performing a SW reset (service changes require a reset): "));
+  if (! ble.reset() ) {
+    error(F("Couldn't reset??"));
+  }
+
+  Serial.println();
+  Serial.println(F("Go to your phone's Bluetooth settings to pair your device"));
+  Serial.println(F("then open an application that accepts keyboard input"));
+
+  Serial.println();
+  Serial.println(F("Enter the character(s) to send:"));
+  Serial.println(F("- \\r for Enter"));
+  Serial.println(F("- \\n for newline"));
+  Serial.println(F("- \\t for tab"));
+  Serial.println(F("- \\b for backspace"));
+
+  Serial.println();
 }
 
+/**************************************************************************/
+/*!
+    @brief  Constantly poll for new command or response data
+*/
+/**************************************************************************/
+void loop(void)
+{
+  // Display prompt
+  Serial.print(F("keyboard > "));
 
-void loop() {
-    /* Read */
-//    location = serialMonitorTest();  // シリアルモニタ用
-    location = readLocation();  // デバイス用
-    if (location != 0) {Serial.print("location: "); Serial.println(location);}
-    count = count % 5;
+  // Check for user input and echo it back if anything was found
+//  char keys[BUFSIZE+1];
+//  getUserInput(keys, BUFSIZE);
+  location = readLocation();
 
     /* 接触なし/あ行/や行/わ行/濁点/未割り当て(20) 以外 */
     if (location > 1 && location < 10 && location != 8) {
@@ -59,7 +146,8 @@ void loop() {
         }
         output_words[0] = consonant_words[location - 2];
         output_words[1] = vowel_words[count];
-        btSerial.print(output_words);
+        ble.print("AT+BleKeyboard=");
+        ble.println(output_words);
         count += 1;
     }
     /* あ行 */
@@ -72,7 +160,8 @@ void loop() {
         }
         output_words[0] = vowel_words[count];
         output_words[1] = '\0';
-        btSerial.print(output_words);
+        ble.print("AT+BleKeyboard=");
+        ble.println(output_words);
         count += 1;
     }
     /* や行 */
@@ -85,7 +174,8 @@ void loop() {
         }
         output_words[0] = yayuyo_words[2 * count];
         output_words[1] = yayuyo_words[2 * count + 1];
-        btSerial.print(output_words);
+        ble.print("AT+BleKeyboard=");
+        ble.println(output_words);
         count += 1;
         if (count == 3) {
             count = 0;
@@ -101,7 +191,8 @@ void loop() {
         }
         output_words[0] = wawonn_words[2 * count];
         output_words[1] = wawonn_words[2 * count + 1];
-        btSerial.print(output_words);
+        ble.print("AT+BleKeyboard=");
+        ble.println(output_words);
         count += 1;
         if (count == 3) {
             count = 0;
@@ -129,7 +220,8 @@ void loop() {
         /* 撥音(っ) */
         else if (p_flag == 1 && (pre_location == 4 && count == 3)) {
             backspaceKey();
-            btSerial.print('x');
+            ble.print("AT+BleKeyboard=");
+            ble.println('x');
             output_words[0] = 't';
             output_words[1] = 'u';
             p_flag = 0;
@@ -144,12 +236,14 @@ void loop() {
         /* 小文字(や行) */
         else if (pre_location == 8) {
             backspaceKey();
-            btSerial.print('x');
+            ble.print("AT+BleKeyboard=");
+            ble.println('x');
             output_words[0] = yayuyo_words[2 * (count - 1)];
             output_words[1] = yayuyo_words[2 * (count - 1) + 1];
             p_flag = 0;
         }
-        btSerial.print(output_words);
+        ble.print("AT+BleKeyboard=");
+        ble.println(output_words);
     }
     /* 記号 */
     else if (location == 20) {
@@ -161,7 +255,8 @@ void loop() {
         }
         output_words[0] = token_words[count];
         output_words[1] = '\0';
-        btSerial.print(output_words);
+        ble.print("AT+BleKeyboard=");
+        ble.println(output_words);
         count += 1;
         if (count == strlen(token_words)) {
             count = 0;
@@ -181,7 +276,13 @@ void loop() {
         count = 0;  // Enterすると文字確定するのでリセット  
     }
 
-    delay(200);
+  if( ble.waitForOK() )
+  {
+    Serial.println( F("OK!") );
+  }else
+  {
+    Serial.println( F("FAILED!") );
+  }
 }
 
 
@@ -196,157 +297,121 @@ int readLocation() {
 }
 
 
-float serialMonitorTest() {
-  /* シリアルモニタから数値を打ち込む */
-  float num = 0;
-  if (Serial.available() > 0) {
-    delay(20);
-    int data_size = Serial.available();
-    int buf[data_size];
-//    Serial.print("data size: "); Serial.println(data_size);
-    for (int i = 0 ; i < data_size ; i++)
-    {
-      buf[i] = Serial.read() - 0x30;
-//      Serial.print(buf[i]);
-    }
-    for (int i = 0; i < data_size; i++) {
-      num += buf[data_size - 1 - i] * pow(10, i);
-    }
-  } else {
-    num = 0;
-  }
-  return num;
-}
-
-
 int divideRegion(int thumb) {
   // 読み値から区分けする
   int num = 0;
-  if (thumb > 1000)
-  {
-    // 濁点
-    num = 21;
-  }
-  else if (thumb > 950)
-  {
-    // わ
-    num = 10;
-  }
-  else if (thumb > 900)
-  {
-    // 記号
-    num = 20;
-  }
-  else if (thumb > 720)
-  {
-    // は
-    num = 7;
-  }
-  else if (thumb > 690)
-  {
-    // や
-    num = 8;
-  }
-  else if (thumb > 600)
-  {
-    // ら
-    num = 9;
-  }
-  else if (thumb > 560)
-  {
-    // た
-    num = 4;
-  }
-  else if (thumb > 551)
-  {
-    // な
-    num = 5;
-  }
-  else if (thumb > 520)
-  {
-    // は
-    num = 6;
-  }
-  else if (thumb > 481)
+  if (thumb > 450)
   {
     // あ
     num = 1;
   }
-    else if (thumb > 472)
+  else if (thumb > 390)
   {
     // か
     num = 2;
   }
-    else if (thumb > 460)
+  else if (thumb > 350)
   {
     // さ
     num = 3;
   }
-    else if (thumb > 449)
+  else if (thumb > 310)
   {
-    // Enter
-    num = 24;
+    // た
+    num = 4;
   }
-    else if (thumb > 440)
+  else if (thumb > 285)
   {
-    // Backspace
+    // な
+    num = 5;
+  }
+  else if (thumb > 250)
+  {
+    // は
+    num = 6;
+  }
+  else if (thumb > 218)
+  {
+    // ま
+    num = 7;
+  }
+  else if (thumb > 212)
+  {
+    // や
+    num = 8;
+  }
+  else if (thumb > 210)
+  {
+    // ら
+    num = 9;
+  }
+  else if (thumb > 5)
+  {
+    // わ
+    num = 10;
+  }
+    else if (thumb > 5)
+  {
+    // 記号
+    num = 20;
+  }
+    else if (thumb > 5)
+  {
+    // 濁点
+    num = 21;
+  }
+    else if (thumb > 5)
+  {
+    // space
+    num = 22;
+  }
+    else if (thumb > 5)
+  {
+    // backspace
     num = 23;
   }
-    else if (thumb > 400)
+    else if (thumb > 5)
   {
-    // Space
-    num = 22;
+    // enter
+    num = 24;
   }
   else
   {
-    // 接触なし
+    // 
     num = 0;
   }
   return num;
 }
 
 
-void sendKeyModifier(byte key, byte modifier){
-  sendKeyCode(key, modifier);
-  delay(100);
-  sendKeyCode((byte)0x00, (byte)0x00);
-}
-
-void sendKey(byte key){
-  sendKeyModifier(key, (byte)0x00);
-}
-
-void sendKeyCode(byte key, byte modifier){
-    btSerial.write(0xFD);
-    btSerial.write(0x09);
-    btSerial.write(0x01);
-    btSerial.write(modifier);
-    btSerial.write((byte)0x00);
-    btSerial.write(key);
-    btSerial.write((byte)0x00);
-    btSerial.write((byte)0x00);
-    btSerial.write((byte)0x00);
-    btSerial.write((byte)0x00);
-    btSerial.write((byte)0x00);
-}
-
 void backspaceKey() {
-  sendKey((byte)0x2A);
+  ble.print("AT+BleKeyboard=");
+  ble.println("\b");
 }
 
 void enterKey() {
-  sendKey((byte)0x28);
+  ble.print("AT+BleKeyboard=");
+  ble.println("\r");
 }
 
 void spaceKey() {
-  sendKey((byte)0x2C);
+  ble.print("AT+BleKeyboard=");
+  ble.println("\t");
 }
 
-void shiftKey() {
-  sendKey((byte)0xE1);
-}
 
-void deleteKey() {
-  sendKey((byte)0x4C);
-}
+void getUserInput(char buffer[], uint8_t maxSize)
+{
+  memset(buffer, 0, maxSize);
+  while( Serial.available() == 0 ) {
+    delay(1);
+  }
 
+  uint8_t count=0;
+
+  do
+  {
+    count += Serial.readBytes(buffer+count, maxSize);
+    delay(2);
+  } while( (count < maxSize) && !(Serial.available() == 0) );
+}
