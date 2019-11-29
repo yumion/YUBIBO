@@ -1,3 +1,4 @@
+/* 左手用 */
 int divideRegion(int thumb) {
   // 読み値から区分けする
   int num = 0;

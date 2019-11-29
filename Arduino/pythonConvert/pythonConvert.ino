@@ -1,5 +1,5 @@
 #include <SoftwareSerial.h>
-#include "ver4.h"
+#include "yubibo4.h"  // YUBIBOの番号でファイル名も変える
 
 #define BT_RX 7
 #define BT_TX 8
@@ -9,6 +9,7 @@ SoftwareSerial btSerial(BT_RX, BT_TX); // Bluetoothとやりとりするため�
 #define PORATE 115200
 
 #define THUMBPIN 2   // analogPin(親指read用)
+int alpha = 0;  // 伸縮によるずれの補正
 
 
  /* --- 入力 --- 
@@ -25,7 +26,7 @@ char voiced_consonant_words[6] = {'g', 'z', 'd', '\0', 'b', '\0'};  // 濁点
 char vowel_words[6] = "aiueo";  // 母音
 char yayuyo_words[7] = "yayuyo";  // や行
 char wawonn_words[7] = "wawonn";  // わ行
-char token_words[6] = {'-', ',', '.', '!', '?', '\0'};  // 記号
+char token_words[6] = {',', '.', '-', '!', '?', '\0'};  // 記号
 char output_words[3] = {};  // 文字結合して出力する用
 
 int location = 0;
@@ -115,6 +116,7 @@ void loop() {
             backspaceKey();
             output_words[0] = voiced_consonant_words[pre_location - 2];
             output_words[1] = vowel_words[count - 1];  // か->がでcount+1される
+            btSerial.print(output_words);
             if (pre_location == 6 || (pre_location == 4 && count == 3)) {
               // は行/つ
                 p_flag = 1;
@@ -125,6 +127,7 @@ void loop() {
             backspaceKey();
             output_words[0] = 'p';
             output_words[1] = vowel_words[count - 1];
+            btSerial.print(output_words);
             p_flag = 0;
         }
         /* 撥音(っ) */
@@ -133,6 +136,7 @@ void loop() {
             btSerial.print('x');
             output_words[0] = 't';
             output_words[1] = 'u';
+            btSerial.print(output_words);
             p_flag = 0;
         }
         /* 小文字(あ行) */
@@ -140,6 +144,7 @@ void loop() {
             backspaceKey();
             output_words[0] = 'x';
             output_words[1] = vowel_words[count - 1];
+            btSerial.print(output_words);
             p_flag = 0;
         }
         /* 小文字(や行) */
@@ -148,9 +153,9 @@ void loop() {
             btSerial.print('x');
             output_words[0] = yayuyo_words[2 * (count - 1)];
             output_words[1] = yayuyo_words[2 * (count - 1) + 1];
+            btSerial.print(output_words);
             p_flag = 0;
         }
-        btSerial.print(output_words);
     }
     /* 記号 */
     else if (location == 20) {
@@ -182,7 +187,7 @@ void loop() {
         count = 0;  // Enterすると文字確定するのでリセット  
     }
 
-    delay(200);
+    delay(250);
 }
 
 
@@ -190,6 +195,7 @@ int readLocation() {
   // どの位置を触れたか検出
   int thumb, location;
   thumb = analogRead(THUMBPIN);
+  thumb += alpha;
   Serial.print("vol: ");
   Serial.println(thumb);
   location = divideRegion(thumb);  // 0-1023を離散値へ変換

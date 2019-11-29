@@ -1,3 +1,4 @@
+/* 左手用 */
 int divideRegion(int thumb) {
   // 読み値から区分けする
   int num = 0;
@@ -6,7 +7,7 @@ int divideRegion(int thumb) {
     // 濁点
     num = 21;
   }
-  else if (thumb > 950)
+  else if (thumb > 935)
   {
     // わ
     num = 10;
@@ -16,27 +17,27 @@ int divideRegion(int thumb) {
     // 記号
     num = 20;
   }
-  else if (thumb > 720)
+  else if (thumb > 740)
   {
     // は
     num = 7;
   }
-  else if (thumb > 690)
+  else if (thumb > 710)
   {
     // や
     num = 8;
   }
-  else if (thumb > 600)
+  else if (thumb > 650)
   {
     // ら
     num = 9;
   }
-  else if (thumb > 560)
+  else if (thumb > 600)
   {
     // た
     num = 4;
   }
-  else if (thumb > 551)
+  else if (thumb > 575)
   {
     // な
     num = 5;
@@ -46,32 +47,32 @@ int divideRegion(int thumb) {
     // は
     num = 6;
   }
-  else if (thumb > 481)
+  else if (thumb > 470)
   {
     // あ
     num = 1;
   }
-    else if (thumb > 472)
+    else if (thumb > 450)
   {
     // か
     num = 2;
   }
-    else if (thumb > 460)
+    else if (thumb > 420)
   {
     // さ
     num = 3;
   }
-    else if (thumb > 449)
+    else if (thumb > 410)
   {
     // Enter
     num = 24;
   }
-    else if (thumb > 440)
+    else if (thumb > 399)
   {
     // Backspace
     num = 23;
   }
-    else if (thumb > 400)
+    else if (thumb > 300)
   {
     // Space
     num = 22;
