@@ -39,8 +39,14 @@ $ python finger_keyboard_arduino.py --port COM4
 iPhone SEで動作を確認しました．
 
 ## キーボード入力方法
+<!--
 <img width="319" alt="yubibo" src="https://user-images.githubusercontent.com/38414956/57672240-3e87e500-7652-11e9-86b9-0eb394ba1795.png">
+-->
+![yubibo](https://user-images.githubusercontent.com/38414956/75324438-4996c380-58ba-11ea-8334-7b61eb2d415a.png)
+
 一昔前のガラケーと同じキーボードです（トグルキーボードと言います）．
+
+
 
 親指で4指の各関節をタッチしてキー入力をします．
 例えば，あ行の節を1回タッチすると `あ` ，2回タッチすると `い` ，6回タッチすると `あ` に戻ってきます．
@@ -50,4 +56,21 @@ iPhone SEで動作を確認しました．
 ## キーボードのソフトウェア調整方法
 `yubibo#.h` を編集します（#には数字が入ります）．
 
-
+```
+ if (thumb > 1000)
+  {
+    // 記号
+    num = 20;
+  }
+  else if (thumb > 970)
+  {
+    // わ
+    num = 10;
+  }
+  else if (thumb > 900)
+  {
+...
+```
+となっているif文の条件式の数値（`thumb > ここ`）を適切な閾値に変更します．
+`thumb` はArduinoで読んだ電圧で，3.3Vを1023，0Vを0と変換した値です．
+各ボタンの電圧をテスターなどで測定し，隣のボタンと電圧が被らないように閾値を定めます．
