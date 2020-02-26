@@ -30,7 +30,7 @@ $ python finger_keyboard_arduino.py --port COM4
 2. Arduino SDKを終了し，PCからArduinoを外す．
 
 
-## 新YUBIBOの使用方法
+## 新YUBIBOの使用方法（`Arduino/pythonConvert/pythonConvert.ino`）
 新YUBIBOではBLuetoothを用いた無線化を行い，python環境も不要になりました．
 1. 使用するデバイスのBluetoothをオンにする．
 2. YUBIBO#とペアリングする．(#には数字が入ります）
