@@ -42,7 +42,8 @@ iPhone SEで動作を確認しました．
 <!--
 <img width="319" alt="yubibo" src="https://user-images.githubusercontent.com/38414956/57672240-3e87e500-7652-11e9-86b9-0eb394ba1795.png">
 -->
-![yubibo](https://user-images.githubusercontent.com/38414956/75324438-4996c380-58ba-11ea-8334-7b61eb2d415a.png)
+![スクリーンショット 2020-02-26 17 31 28](https://user-images.githubusercontent.com/38414956/75326380-d7c07900-58bd-11ea-9052-d441e209e2bc.png)
+
 
 一昔前のガラケーと同じキーボードです（トグルキーボードと言います）．
 
