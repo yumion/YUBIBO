@@ -1,5 +1,10 @@
-# Yubibo
+# YUBIBO
 これは東京大学Spring Founder Program(SFP)で作製されたものです．
+
+## コンペ参加履歴
+- GUGEN2019エントリー
+- ヒーローズリーグ2019・XUIリーグ XinSuzuki賞（個人賞）受賞
+
 
 ## 環境（動作確認済み）
 - Windows 10 / MacOS Mojave
